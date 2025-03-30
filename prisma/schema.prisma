@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String @id @default(uuid())
+  username  String
+  email     String
+  password  String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt  
+
+  @@map("tb_admins")
+}
+
+model Lecture {
+  id    String @id @default(uuid())
+  name  String 
+  photo String?
+  code  String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  day   Day[]
+  presence  Presence[]
+
+  @@map("tb_lectures")
+}
+
+
+model Day {
+  id    String @id @default(uuid())
+  name  String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  lecture   Lecture[]
+  presence  Presence[]
+  
+  @@map("tb_days")
+}
+
+model Presence {
+  id    String  @id @default(uuid())
+  lecture_id    String 
+  day_id   String
+  status   String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  lecture   Lecture   @relation(fields: [lecture_id], references: [id], onDelete: Cascade)
+  day   Day   @relation(fields: [day_id], references: [id], onDelete: Cascade)
+
+  @@map("tb_presences")
+}
