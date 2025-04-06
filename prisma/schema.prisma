@@ -26,13 +26,14 @@ model Admin {
 
 model Lecture {
   id    String @id @default(uuid())
+  rfid_id String
   name  String 
   photo String?
   code  String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  day   Day[]
+  day   LectureDay[]
   presence  Presence[]
 
   @@map("tb_lectures")
@@ -45,10 +46,23 @@ model Day {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  lecture   Lecture[]
+  lecture   LectureDay[]
   presence  Presence[]
-  
+
   @@map("tb_days")
+}
+
+model LectureDay {
+  lecture_id String
+  day_id     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lecture Lecture @relation(fields: [lecture_id], references: [id], onDelete: Cascade)
+  day     Day     @relation(fields: [day_id], references: [id], onDelete: Cascade)
+
+  @@id([lecture_id, day_id]) // Composite Key untuk Many-to-Many
+  @@map("tb_lecture_day")
 }
 
 model Presence {
